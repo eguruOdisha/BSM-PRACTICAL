@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="or">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Practical Teaching Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin: 15px 0;
+            font-weight: 700;
+        }
+
+        .header-card .subtitle {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .start-btn {
+            margin-top: 20px;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+
+        #gameSection {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question-navigator {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+
+        .question-navigator h3 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .question-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .question-card-nav {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .question-card-nav:hover::before {
+            left: 100%;
+        }
+
+        .question-card-nav:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .question-card-nav.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .question-card-nav.completed {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .question-card-nav.attempted {
+            background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%);
+            border-color: #ff9800;
+            color: white;
+        }
+
+        .question-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .question-number {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .question-status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .question-scenario-preview {
+            font-size: 13px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .nav-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .nav-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-legend-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .scenario-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.2);
+        }
+
+        .scenario-box h3 {
+            color: #e65100;
+            margin-bottom: 12px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scenario-box p {
+            color: #424242;
+            line-height: 1.8;
+            font-size: 15px;
+            text-align: justify;
+        }
+
+        .question-section {
+            margin: 20px 0;
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question-section.active {
+            display: block;
+        }
+
+        .question-title {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 15px;
+            border-radius: 10px;
+            color: #1565c0;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(21, 101, 192, 0.2);
+        }
+
+        .instruction-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #4caf50;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.2);
+        }
+
+        .instruction-box strong {
+            color: #2e7d32;
+            font-size: 15px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            color: #424242;
+            line-height: 1.5;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .option-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #667eea;
+            background: #f5f7ff;
+            transform: translateX(5px);
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196f3;
+            font-weight: 600;
+        }
+
+        .option-btn.multi-selected {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196f3;
+            font-weight: 600;
+        }
+
+        .option-btn.multi-selected::after {
+            content: "✓";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2196f3;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            border-color: #4caf50;
+            animation: correctPulse 0.5s ease-out;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            border-color: #f44336;
+            animation: wrongShake 0.5s ease-out;
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .option-btn.should-select {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            border-color: #fbc02d;
+        }
+
+        .btn {
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .next-btn.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+            font-size: 15px;
+            line-height: 1.8;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #feedback.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .score-box {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #667eea;
+            font-weight: bold;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .final-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .final-card h2 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .final-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .final-score p:first-of-type {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        .final-score p:nth-of-type(2) {
+            font-size: 52px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .final-score p:last-of-type {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        .restart-btn:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 768px) {
+            .header-card h1 {
+                font-size: 24px;
+            }
+            
+            .question-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header-card">
+            <div class="header-icon" id="headerIcon">⚖️</div>
+            <h1 id="courseTitle">Loading...</h1>
+            <p class="subtitle" id="courseSubtitle">Loading...</p>
+            <p class="subtitle" id="courseDescription" style="margin-top: 10px; font-size: 14px;">Loading...</p>
+            
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalQuestions">0</div>
+                    <div class="stat-label">ପ୍ରଶ୍ନ</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="totalSteps">0</div>
+                    <div class="stat-label">ପଦକ୍ଷେପ</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="maxScore">0</div>
+                    <div class="stat-label">ସର୍ବାଧିକ ସ୍କୋର</div>
+                </div>
+            </div>
+            
+            <button onclick="startGame()" class="start-btn">
+                🎮 ପରୀକ୍ଷା ଆରମ୍ଭ କରନ୍ତୁ
+            </button>
+        </div>
+
+        <!-- Game Section -->
+        <div id="gameSection">
+            <!-- Question Navigator -->
+            <div class="question-navigator">
+                <h3>📝 ପ୍ରଶ୍ନ ଚୟନ କରନ୍ତୁ (ପରିସ୍ଥିତି ଦେଖନ୍ତୁ)</h3>
+                <div id="questionCardsContainer" class="question-cards-grid"></div>
+                <div class="nav-legend">
+                    <div class="nav-legend-item">
+                        <div class="nav-legend-box current" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea;"></div>
+                        <span>ବର୍ତ୍ତମାନ</span>
+                    </div>
+                    <div class="nav-legend-item">
+                        <div class="nav-legend-box completed" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border-color: #4caf50;"></div>
+                        <span>ସମ୍ପୂର୍ଣ୍ଣ</span>
+                    </div>
+                    <div class="nav-legend-item">
+                        <div class="nav-legend-box attempted" style="background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%); border-color: #ff9800;"></div>
+                        <span>ଆରମ୍ଭ କରିଛନ୍ତି</span>
+                    </div>
+                    <div class="nav-legend-item">
+                        <div class="nav-legend-box" style="background: white; border-color: #e0e0e0;"></div>
+                        <span>ଅପ୍ରୟାସ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <!-- Progress -->
+                <div class="progress-bar">
+                    ପ୍ରଶ୍ନ <span id="currentQ">1</span> / <span id="totalQ">1</span> | 
+                    ପଦକ୍ଷେପ <span id="currentStep">1</span> / <span id="totalStepsInQuestion">1</span>
+                </div>
+
+                <!-- Scenario -->
+                <div id="scenarioBox" class="scenario-box"></div>
+
+                <!-- Dynamic Steps Container -->
+                <div id="stepsContainer"></div>
+
+                <!-- Next Button -->
+                <button id="nextBtn" class="btn next-btn" onclick="nextQuestion()">
+                    ➜ ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ
+                </button>
+
+                <!-- Feedback -->
+                <div id="feedback"></div>
+
+                <!-- Score -->
+                <div class="score-box">
+                    ସ୍କୋର: <span id="score">0</span> / <span id="maxScoreDisplay">0</span> 🌟
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION OBJECT - MODIFY THIS FOR ANY SUBJECT
+        // ============================================
+        
+const CONFIG = {
+    // Course Information
+course: {
+    icon: "📊",
+    title: "Management Principles - ପରିଚାଳନା ସିଦ୍ଧାନ୍ତ",
+    subtitle: "Management Students ପାଇଁ ବ୍ୟବହାରିକ ଶିକ୍ଷା",
+    description: "Management concepts through practical scenarios - ପ୍ରତିଟି ପ୍ରଶ୍ନରେ ସମସ୍ତ ଉତ୍ତର ସଠିକ୍ ହେଲେ ୧୦ ପଏଣ୍ଟ",
+    pointsPerQuestion: 10
+},
+
+questions: [
+    {
+        scenario: "ଆପଣ ଏକ ନୂଆ ରେଷ୍ଟୁରାଣ୍ଟ ଖୋଲିବାକୁ ଚାହୁଁଛନ୍ତି। ଆପଣଙ୍କ ପାଖରେ ୫ ଲକ୍ଷ ଟଙ୍କା ପୁଞ୍ଜି ଅଛି, ୩ ଜଣ ରାନ୍ଧୁଣୀ, ୨ ଜଣ ୱେଟର ଏବଂ ଗୋଟିଏ ଛୋଟ ସ୍ଥାନ ଅଛି। ଆପଣଙ୍କର ଲକ୍ଷ୍ୟ ହେଉଛି ୬ ମାସ ମଧ୍ୟରେ ଦିନକୁ ୧୦୦ ଗ୍ରାହକଙ୍କୁ ସେବା ପ୍ରଦାନ କରିବା ଏବଂ ଲାଭଜନକ ହେବା। ଆପଣ ଏହି ବ୍ୟବସାୟକୁ କିପରି ପରିଚାଳନା କରିବେ?",
+        steps: [
+            {
+                id: "step1",
+                type: "singleChoice",
+                question: "୧. Management କ'ଣ? ଏହାର ମୂଳ ଅର୍ଥ କଣ?",
+                options: [
+                    "କେବଳ ନିଜେ କାମ କରିବା",
+                    "ଅନ୍ୟମାନଙ୍କ ମାଧ୍ୟମରେ କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବା - ଦକ୍ଷତା ଓ ପ୍ରଭାବଶାଳୀତା ସହିତ",
+                    "କେବଳ ନିର୍ଦ୍ଦେଶ ଦେବା",
+                    "କେବଳ ଅର୍ଥ ଉପାର୍ଜନ କରିବା"
+                ],
+                correct: 1
+            },
+            {
+                id: "step2",
+                type: "multipleChoice",
+                question: "୨. ଏହି ରେଷ୍ଟୁରାଣ୍ଟରେ Management ର ପାଞ୍ଚଟି କାର୍ଯ୍ୟ (POSDC) କେଉଁଗୁଡ଼ିକ ପ୍ରୟୋଗ ହେବ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ସମସ୍ତ ପାଞ୍ଚଟି କାର୍ଯ୍ୟ ଚୟନ କରନ୍ତୁ",
+                options: [
+                    "Planning - ମେନୁ ପ୍ରସ୍ତୁତି, ବଜେଟ୍, ଲକ୍ଷ୍ୟ ନିର୍ଦ୍ଧାରଣ",
+                    "Organizing - ରାନ୍ଧୁଣୀ, ୱେଟର, ସ୍ଥାନ ବ୍ୟବସ୍ଥା",
+                    "Staffing - ୩ ରାନ୍ଧୁଣୀ ଓ ୨ ୱେଟର ନିଯୁକ୍ତି ଓ ତାଲିମ",
+                    "Directing - କର୍ମଚାରୀଙ୍କୁ ଦୈନିକ ନିର୍ଦ୍ଦେଶ ଓ ପ୍ରେରଣା",
+                    "Controlling - ଦୈନିକ ବିକ୍ରୟ ଯାଞ୍ଚ, ଗୁଣବତ୍ତା ନିୟନ୍ତ୍ରଣ"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+            {
+                id: "step3",
+                type: "singleChoice",
+                question: "୩. F.W. Taylor ଙ୍କ ସଂଜ୍ଞା ଅନୁସାରେ, ରେଷ୍ଟୁରାଣ୍ଟରେ କେଉଁଟି ସବୁଠୁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ?",
+                options: [
+                    "କେବଳ ଭଲ ଖାଦ୍ୟ ପ୍ରସ୍ତୁତ କରିବା",
+                    "ଠିକ୍ କାମ ଜାଣିବା ଏବଂ ସବୁଠୁ ଭଲ ଓ ଶସ୍ତା ଉପାୟରେ କରିବା (Efficiency)",
+                    "କେବଳ ଗ୍ରାହକଙ୍କୁ ଖୁସି କରିବା",
+                    "କେବଳ ଅଧିକ କର୍ମଚାରୀ ନିଯୁକ୍ତି"
+                ],
+                correct: 1
+            },
+            {
+                id: "step4",
+                type: "singleChoice",
+                question: "୪. Henri Fayol ଙ୍କ ପାଞ୍ଚଟି କାର୍ଯ୍ୟ ମଧ୍ୟରୁ ପ୍ରଥମ କଦମ କଣ ହେବା ଉଚିତ?",
+                options: [
+                    "ତୁରନ୍ତ କର୍ମଚାରୀ ନିଯୁକ୍ତି (Staffing)",
+                    "Forecast & Planning - ଭବିଷ୍ୟତ ଚିନ୍ତା କରି ଯୋଜନା ପ୍ରସ୍ତୁତ",
+                    "ତୁରନ୍ତ ରେଷ୍ଟୁରାଣ୍ଟ ଖୋଲିବା",
+                    "କେବଳ ନିର୍ଦ୍ଦେଶ ଦେବା (Command)"
+                ],
+                correct: 1
+            },
+            {
+                id: "step5",
+                type: "multipleChoice",
+                question: "୫. Planning ପଦକ୍ଷେପରେ ଆପଣ କେଉଁଗୁଡ଼ିକ କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+                options: [
+                    "ଲକ୍ଷ୍ୟ: ୬ ମାସରେ ଦିନକୁ ୧୦୦ ଗ୍ରାହକ",
+                    "ମେନୁ ନିର୍ଣ୍ଣୟ: କେଉଁ ଖାଦ୍ୟ ବିକ୍ରି ହେବ",
+                    "ବଜେଟ୍: ୫ ଲକ୍ଷ ଟଙ୍କା କେମିତି ଖର୍ଚ୍ଚ ହେବ",
+                    "ରଣନୀତି: Marketing କେମିତି କରିବେ",
+                    "ତୁରନ୍ତ ଦୋକାନ ଖୋଲିବା ବିନା ଯୋଜନାରେ"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+            {
+                id: "step6",
+                type: "singleChoice",
+                question: "୬. Organizing ପଦକ୍ଷେପରେ ସବୁଠୁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ କଣ?",
+                options: [
+                    "କେବଳ ଅଧିକ ଟଙ୍କା ସଂଗ୍ରହ",
+                    "ସମ୍ବଳ (Resources) ବ୍ୟବସ୍ଥା: ରାନ୍ଧୁଣୀ-ରୋଷେଇଘର, ୱେଟର-ସେବା, ସ୍ଥାନ-ବସିବା",
+                    "କେବଳ ବିଜ୍ଞାପନ",
+                    "କେବଳ ଗ୍ରାହକ ଖୋଜିବା"
+                ],
+                correct: 1
+            },
+            {
+                id: "step7",
+                type: "singleChoice",
+                question: "୭. Directing କାହିଁକି ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ?",
+                options: [
+                    "କେବଳ ଆଦେଶ ଦେବା ପାଇଁ",
+                    "କର୍ମଚାରୀଙ୍କୁ ମାର୍ଗଦର୍ଶନ, ପ୍ରେରଣା ଓ ନିର୍ଦ୍ଦେଶ - ଯେପରି ଗୋଟିଏ ଟିମ୍ ପରି କାମ କରିବେ",
+                    "କେବଳ ବେତନ ଦେବା",
+                    "କେବଳ ଯାଞ୍ଚ କରିବା"
+                ],
+                correct: 1
+            },
+            {
+                id: "step8",
+                type: "multipleChoice",
+                question: "୮. Controlling ପଦକ୍ଷେପରେ ଆପଣ କଣ କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+                options: [
+                    "ଦୈନିକ ବିକ୍ରୟ ଯାଞ୍ଚ: ଲକ୍ଷ୍ୟ ୧୦୦ ଗ୍ରାହକ ମିଳୁଛି କି?",
+                    "ଖାଦ୍ୟ ଗୁଣବତ୍ତା ମନିଟରିଂ",
+                    "ତୁଳନା: ଯୋଜନା vs ବାସ୍ତବ ଫଳାଫଳ",
+                    "ଭୁଲ ସଂଶୋଧନ: ଯଦି କିଛି ଭୁଲ୍ ହୋଇଛି, ତାକୁ ସୁଧାରିବା",
+                    "କେବଳ ବସି ରହିବା"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+            {
+                id: "step9",
+                type: "singleChoice",
+                question: "୯. Efficiency vs Effectiveness - ରେଷ୍ଟୁରାଣ୍ଟରେ କେଉଁଟି ଉଦାହରଣ?",
+                options: [
+                    "Efficiency: କମ୍ ଖର୍ଚ୍ଚରେ ଖାଦ୍ୟ | Effectiveness: ଲକ୍ଷ୍ୟ ୧୦୦ ଗ୍ରାହକ ହାସଲ",
+                    "କେବଳ ଅଧିକ ଖର୍ଚ୍ଚ କରିବା",
+                    "କେବଳ କମ୍ ଗ୍ରାହକଙ୍କୁ ସେବା",
+                    "ଦୁଇଟି ସମାନ"
+                ],
+                correct: 0
+            },
+            {
+                id: "step10",
+                type: "singleChoice",
+                question: "୧୦. Management କାହିଁକି Goal-Oriented (ଲକ୍ଷ୍ୟ-ଆଧାରିତ)?",
+                options: [
+                    "କାରଣ ବିନା ଲକ୍ଷ୍ୟରେ କାମ କରିବା ସହଜ",
+                    "କାରଣ ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ନିର୍ଦ୍ଦିଷ୍ଟ ଲକ୍ଷ୍ୟ (୧୦୦ ଗ୍ରାହକ, ଲାଭ) ହାସଲ ପାଇଁ",
+                    "କେବଳ ସମୟ ପାସ୍ କରିବା ପାଇଁ",
+                    "କାରଣ ଏହା ଫ୍ୟାଶନ୍"
+                ],
+                correct: 1
+            },
+            {
+                id: "step11",
+                type: "singleChoice",
+                question: "୧୧. Management କାହିଁକି Universal (ସର୍ବଜନୀନ)?",
+                options: [
+                    "କେବଳ ରେଷ୍ଟୁରାଣ୍ଟରେ ପ୍ରୟୋଗ ହୁଏ",
+                    "ସବୁ ସଂସ୍ଥା, ଦେଶ, କ୍ଷେତ୍ରରେ ପ୍ରୟୋଗ ହୁଏ - ରେଷ୍ଟୁରାଣ୍ଟ, ସ୍କୁଲ, ହସ୍ପିଟାଲ ସବୁଠି",
+                    "କେବଳ ବଡ଼ କମ୍ପାନୀରେ",
+                    "କେବଳ ସରକାରୀ କାର୍ଯ୍ୟାଳୟରେ"
+                ],
+                correct: 1
+            },
+            {
+                id: "step12",
+                type: "singleChoice",
+                question: "୧୨. Management କାହିଁକି Dynamic (ଗତିଶୀଳ)?",
+                options: [
+                    "କାରଣ ଏହା କେବେ ବଦଳେ ନାହିଁ",
+                    "କାରଣ ଏହା ସମୟ, ପ୍ରଯୁକ୍ତି, ପରିବେଶ ସହିତ ବଦଳେ - ଯେପରି ଆଜି Online Order",
+                    "କାରଣ ଏହା ପୁରୁଣା ନିୟମ",
+                    "କେବଳ Manager ର ମନ ଅନୁସାରେ"
+                ],
+                correct: 1
+            },
+            {
+                id: "step13",
+                type: "singleChoice",
+                question: "୧୩. Peter Drucker କହନ୍ତି Management କଣ କରେ?",
+                options: [
+                    "କେବଳ ବ୍ୟବସାୟ ଚଲାଏ",
+                    "ତିନିଟି କାମ: Business ଚଲାଏ, Managers ଗାଇଡ୍ କରେ, Workers ଯତ୍ନ ନିଏ",
+                    "କେବଳ ଟଙ୍କା ରୋଜଗାର",
+                    "କେବଳ ନିର୍ଦ୍ଦେଶ ଦେଇ ବସେ"
+                ],
+                correct: 1
+            },
+            {
+                id: "step14",
+                type: "multipleChoice",
+                question: "୧୪. ଏହି ରେଷ୍ଟୁରାଣ୍ଟ ସଫଳ ହେବା ପାଇଁ କେଉଁଗୁଡ଼ିକ ଆବଶ୍ୟକ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+                options: [
+                    "ସ୍ପଷ୍ଟ ଯୋଜନା ଓ ଲକ୍ଷ୍ୟ (Planning)",
+                    "ସଠିକ୍ ସମ୍ବଳ ବ୍ୟବସ୍ଥା (Organizing)",
+                    "ଦକ୍ଷ କର୍ମଚାରୀ (Staffing)",
+                    "ଭଲ ନେତୃତ୍ୱ ଓ ପ୍ରେରଣା (Directing)",
+                    "ନିରନ୍ତର ନିୟନ୍ତ୍ରଣ ଓ ମୂଲ୍ୟାୟନ (Controlling)"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            }
+        ]
+    },
+
+    {
+        scenario: "ଆପଣ ଗୋଟିଏ ସ୍କୁଲର ପ୍ରଧାନଶିକ୍ଷକ ହୋଇଛନ୍ତି। ସ୍କୁଲରେ ୨୦ ଜଣ ଶିକ୍ଷକ, ୫୦୦ ଜଣ ଛାତ୍ରଛାତ୍ରୀ ଅଛନ୍ତି। ଏହି ବର୍ଷ ପରୀକ୍ଷା ଫଳାଫଳ ଖୁବ୍ ଖରାପ ଥିଲା - କେବଳ ୪୦% ପାସ୍। ଆପଣଙ୍କର ଲକ୍ଷ୍ୟ: ଆସନ୍ତା ବର୍ଷ ୯୦% ପାସ୍ ହାସଲ କରିବା। ଶିକ୍ଷକମାନେ ହତାଶ ଅଛନ୍ତି ଏବଂ ଛାତ୍ରମାନଙ୍କର ଆଗ୍ରହ କମ୍। ଆପଣ କେମିତି Management ପ୍ରୟୋଗ କରି ସ୍କୁଲର ଉନ୍ନତି କରିବେ?",
+        steps: [
+            {
+                id: "step1",
+                type: "singleChoice",
+                question: "୧. ଏହି ପରିସ୍ଥିତିରେ Management କାହିଁକି ଆବଶ୍ୟକ?",
+                options: [
+                    "କେବଳ ନିୟମ ପାଳନ ପାଇଁ",
+                    "କାରଣ ବିନା Management ସ୍କୁଲ ସଫଳ ହୋଇପାରିବ ନାହିଁ - ଲକ୍ଷ୍ୟ ହାସଲ ଅସମ୍ଭବ",
+                    "କେବଳ ଶିକ୍ଷକଙ୍କୁ ଡରାଇବା ପାଇଁ",
+                    "କାରଣ ଅନ୍ୟ ସ୍କୁଲ କରୁଛି"
+                ],
+                correct: 1
+            },
+            {
+                id: "step2",
+                type: "multipleChoice",
+                question: "୨. Planning ପଦକ୍ଷେପରେ ଆପଣ କଣ କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+                options: [
+                    "ଲକ୍ଷ୍ୟ ସ୍ଥିର: ୯୦% ପାସ୍ ହାସଲ",
+                    "ସମସ୍ୟା ବିଶ୍ଳେଷଣ: କାହିଁକି ୪୦% ହିଁ ପାସ୍?",
+                    "ରଣନୀତି: ଅଧିକ କ୍ଲାସ୍, Tutorial, ବହି ବ୍ୟବସ୍ଥା",
+                    "ବଜେଟ୍: କେତେ ଟଙ୍କା ଲାଗିବ",
+                    "ତୁରନ୍ତ ଶିକ୍ଷକଙ୍କୁ ତିରସ୍କାର କରିବା"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+            {
+                id: "step3",
+                type: "singleChoice",
+                question: "୩. Organizing ରେ ଆପଣ ସମ୍ବଳ (Resources) କେମିତି ବ୍ୟବସ୍ଥା କରିବେ?",
+                options: [
+                    "କେବଳ ପୁରୁଣା ପଦ୍ଧତି ଜାରି ରଖିବା",
+                    "୨୦ ଶିକ୍ଷକଙ୍କୁ ବିଭିନ୍ନ ବିଷୟରେ ନିଯୁକ୍ତି, ଲାଇବ୍ରେରୀ ସୁଧାରିବା, Smart Class ବ୍ୟବସ୍ଥା",
+                    "କେବଳ ଅଧିକ ଶିକ୍ଷକ ନିଯୁକ୍ତି",
+                    "କିଛି ନ କରିବା"
+                ],
+                correct: 1
+            },
+            {
+                id: "step4",
+                type: "multipleChoice",
+                question: "୪. Staffing ରେ ଆପଣ କେଉଁ କାମ କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+                options: [
+                    "ଶିକ୍ଷକମାନଙ୍କୁ Training: ନୂଆ ଶିକ୍ଷାଦାନ ପଦ୍ଧତି",
+                    "ଦୁର୍ବଳ ଶିକ୍ଷକଙ୍କୁ ଉନ୍ନତି ପାଇଁ ସହାୟତା",
+                    "ଯଦି ଆବଶ୍ୟକ, ନୂଆ ଦକ୍ଷ ଶିକ୍ଷକ ନିଯୁକ୍ତି",
+                    "ଶିକ୍ଷକମାନଙ୍କର Skills Development",
+                    "କେବଳ ସମସ୍ତଙ୍କୁ ଚାକିରୀରୁ ହଟାଇବା"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+            {
+                id: "step5",
+                type: "singleChoice",
+                question: "୫. Directing - ହତାଶ ଶିକ୍ଷକମାନଙ୍କୁ ଆପଣ କେମିତି ପ୍ରେରିତ କରିବେ?",
+                options: [
+                    "କେବଳ ଧମକ ଦେବା ଓ ଡରାଇବା",
+                    "ସ୍ପଷ୍ଟ ନିର୍ଦ୍ଦେଶ ଦେବା, ଉତ୍ସାହିତ କରିବା, ସମର୍ଥନ ଦେବା, ଲକ୍ଷ୍ୟର ଗୁରୁତ୍ୱ ବୁଝାଇବା",
+                    "କିଛି ନ କହିବା",
+                    "କେବଳ ବେତନ ବଢ଼ାଇ ଦେବା"
+                ],
+                correct: 1
+            },
+            {
+                id: "step6",
+                type: "multipleChoice",
+                question: "୬. Controlling - ଆପଣ Progress କେମିତି Monitor କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+                instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+options: [
+"ମାସିକ ପରୀକ୍ଷା: ଛାତ୍ରଙ୍କ Progress ଯାଞ୍ଚ",
+"ଶିକ୍ଷକଙ୍କ କାର୍ଯ୍ୟଦକ୍ଷତା ସମୀକ୍ଷା",
+"ତୁଳନା: ଯୋଜନା (୯୦%) vs ବାସ୍ତବ ଫଳାଫଳ",
+"ଭୁଲ ସଂଶୋଧନ: ଯଦି କିଛି କାମ ନ କରେ, ନୂଆ ଉପାୟ",
+"କେବଳ ବର୍ଷ ଶେଷରେ ଦେଖିବା"
+],
+correct: [0, 1, 2, 3]
+},
+{
+id: "step7",
+type: "singleChoice",
+question: "୭. Management as a Process - କାହିଁକି ଏହା ନିରନ୍ତର?",
+options: [
+"କାରଣ ଗୋଟିଏ ଥର କଲେ ହୁଏ",
+"କାରଣ Planning→Organizing→Staffing→Directing→Controlling ଚକ୍ର ନିରନ୍ତର ଚାଲେ",
+"କାରଣ କେବଳ ପରୀକ୍ଷା ସମୟରେ ଆବଶ୍ୟକ",
+"କାରଣ କେବଳ Manager ର ଇଚ୍ଛା"
+],
+correct: 1
+},
+{
+id: "step8",
+type: "singleChoice",
+question: "୮. Efficiency ଓ Effectiveness - ସ୍କୁଲରେ ଉଦାହରଣ?",
+options: [
+"ଦୁଇଟି ସମାନ କଥା",
+"Efficiency: କମ୍ ସମ୍ବଳରେ ଶିକ୍ଷାଦାନ | Effectiveness: ଲକ୍ଷ୍ୟ ୯୦% ପାସ୍ ହାସଲ",
+"କେବଳ ଅଧିକ ଟଙ୍କା ଖର୍ଚ୍ଚ",
+"କେବଳ ଫଳାଫଳକୁ ଅବଗଣନା"
+],
+correct: 1
+},
+{
+id: "step9",
+type: "singleChoice",
+question: "୯. Goal-Oriented Nature - ଏହି ସ୍କୁଲର ଲକ୍ଷ୍ୟ କଣ?",
+options: [
+"କେବଳ ସମୟ ପାସ୍",
+"ସ୍ପଷ୍ଟ ଲକ୍ଷ୍ୟ: ୪୦% ରୁ ୯୦% ପାସ୍ - ସମସ୍ତ କାର୍ଯ୍ୟ ଏହି ଲକ୍ଷ୍ୟ ଆଡ଼କୁ",
+"କୌଣସି ଲକ୍ଷ୍ୟ ନାହିଁ",
+"କେବଳ ଶିକ୍ଷକଙ୍କୁ ଖୁସି ରଖିବା"
+],
+correct: 1
+},
+{
+id: "step10",
+type: "singleChoice",
+question: "୧୦. Universal Nature - Management Principles ସ୍କୁଲ, Hospital, Company ସବୁଠି କାହିଁକି କାମ କରେ?",
+options: [
+"କାରଣ ମୂଳ ସିଦ୍ଧାନ୍ତ (Planning, Organizing, etc.) ସବୁଠି ସମାନ, କେବଳ ପ୍ରୟୋଗ ଭିନ୍ନ",
+"କାରଣ ସବୁ ସ୍ଥାନରେ ସମାନ କାମ",
+"କାରଣ ସରକାରୀ ନିୟମ",
+"କେବଳ ସଂଯୋଗ"
+],
+correct: 0
+},
+{
+id: "step11",
+type: "singleChoice",
+question: "୧୧. Dynamic Nature - ଆଜିର ସ୍କୁଲରେ କେଉଁ ପରିବର୍ତ୍ତନ?",
+options: [
+"ପୁରୁଣା Blackboard ପଦ୍ଧତି ଅବ୍ୟାହତ",
+"Smart Classes, Online Learning, Digital Methods - Management ପରିବର୍ତ୍ତନ ସହିତ ଖାପ ଖାଏ",
+"କୌଣସି ପରିବର୍ତ୍ତନ ନାହିଁ",
+"କେବଳ ନାମ ବଦଳ"
+],
+correct: 1
+},
+{
+id: "step12",
+type: "multipleChoice",
+question: "୧୨. Peter Drucker - ପ୍ରଧାନଶିକ୍ଷକ ଭାବେ ଆପଣ କେଉଁ ତିନୋଟି ପରିଚାଳନା କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+instruction: "✓ ତିନୋଟି ଚୟନ କରନ୍ତୁ",
+options: [
+"Business Management: ସ୍କୁଲ ସଫଳତାର ସହିତ ଚଲାଇବା",
+"Manager Management: ଶିକ୍ଷକମାନଙ୍କୁ ଗାଇଡ୍ କରିବା",
+"Worker & Work Management: ଛାତ୍ର ଓ ଶିକ୍ଷାର ଯତ୍ନ",
+"କେବଳ ନିଜର କାମ",
+"କୌଣସି ଦାୟିତ୍ୱ ନାହିଁ"
+],
+correct: [0, 1, 2]
+},
+{
+id: "step13",
+type: "singleChoice",
+question: "୧୩. F.W. Taylor - Efficiency କେମିତି ହାସଲ କରିବେ?",
+options: [
+"କେବଳ ଅଧିକ ସମୟ କାମ କରିବା",
+"ସଠିକ୍ ପଦ୍ଧତି ବ୍ୟବହାର: କମ୍ ସମୟ, କମ୍ ଖର୍ଚ୍ଚରେ ଭଲ ଫଳାଫଳ - Scientific Approach",
+"କେବଳ ଅନୁମାନ ଉପରେ କାମ",
+"କେବଳ ଶିକ୍ଷକଙ୍କୁ ଅଧିକ ଚାପ"
+],
+correct: 1
+},
+{
+id: "step14",
+type: "singleChoice",
+question: "୧୪. Henri Fayol - Coordinate କାହିଁକି ଆବଶ୍ୟକ?",
+options: [
+"କେବଳ ନିୟମ ପାଳନ",
+"ସମସ୍ତ କାର୍ଯ୍ୟକଳାପକୁ ଏକତ୍ର କରିବା - ଯେପରି ସମସ୍ତ ଶିକ୍ଷକ, ବିଭାଗ, ଛାତ୍ର ଏକ ଲକ୍ଷ୍ୟରେ କାମ କରନ୍ତି",
+"କେବଳ ମିଟିଂ କରିବା",
+"କେବଳ ଆଦେଶ ଦେବା"
+],
+correct: 1
+},
+{
+id: "step15",
+type: "multipleChoice",
+question: "୧୫. ଏହି ସ୍କୁଲ ଲକ୍ଷ୍ୟ ହାସଲ ପାଇଁ ସବୁଠୁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ କଣ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+options: [
+"ସ୍ପଷ୍ଟ ଯୋଜନା ଓ ଲକ୍ଷ୍ୟ (Planning)",
+"ସଠିକ୍ ସମ୍ବଳ ବ୍ୟବସ୍ଥା (Organizing)",
+"ଦକ୍ଷ ଓ ପ୍ରେରିତ ଶିକ୍ଷକ (Staffing & Directing)",
+"ନିରନ୍ତର ମନିଟରିଂ ଓ ସୁଧାର (Controlling)",
+"ସମସ୍ତ Management Functions ର ସମନ୍ୱୟ"
+],
+correct: [0, 1, 2, 3, 4]
+}
+]
+},
+{
+    scenario: "ଆପଣ ଏକ ଗାଁର ଯୁବକ ଅଟନ୍ତି ଏବଂ ୧୦ ଜଣ ସାଙ୍ଗଙ୍କ ସହିତ ଏକ 'Organic Farming Cooperative' (ଜୈବିକ ଚାଷ ସହକାରୀ ସମିତି) ଆରମ୍ଭ କରିବାକୁ ଚାହୁଁଛନ୍ତି। ଆପଣଙ୍କର ୫୦ ଏକର ଜମି, କିଛି ପୁଞ୍ଜି, କିନ୍ତୁ କୌଣସି ଅଭିଜ୍ଞତା ନାହିଁ। ଲକ୍ଷ୍ୟ: ୧ ବର୍ଷ ମଧ୍ୟରେ ଲାଭଜନକ ହୋଇ ୧୦୦ କୁଇଣ୍ଟାଲ Organic ଚାଉଳ ଓ ପନିପରିବା ଉତ୍ପାଦନ କରିବା। ଆପଣ Management Principles କେମିତି ପ୍ରୟୋଗ କରିବେ?",
+    steps: [
+        {
+            id: "step1",
+            type: "singleChoice",
+            question: "୧. ଏହି Cooperative ପାଇଁ Management କାହିଁକି ଆବଶ୍ୟକ?",
+            options: [
+                "କେବଳ ଗାଁରେ ଫ୍ୟାଶନ୍",
+                "କାରଣ ୧୦ ଜଣ, ୫୦ ଏକର, ଭିନ୍ନ କାମ - ବିନା Management ବିଫଳତା ନିଶ୍ଚିତ",
+                "କେବଳ ସରକାରୀ ଅନୁଦାନ ପାଇଁ",
+                "କେବଳ ନାମ ପାଇଁ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step2",
+            type: "multipleChoice",
+            question: "୨. Planning Stage - ଆପଣ କଣ ଯୋଜନା କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+            instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+            options: [
+                "Objectives: ୧୦୦ କୁଇଣ୍ଟାଲ ଉତ୍ପାଦନ, ଲାଭଜନକ ହେବା",
+                "ଚାଷ Plan: କେଉଁ ଫସଲ, କେତେ ଜମିରେ, କେବେ",
+                "Budget: ବିହନ, ସାର, ଶ୍ରମିକ ପାଇଁ କେତେ ଖର୍ଚ୍ଚ",
+                "Marketing Strategy: କେଉଁଠାରେ ବିକ୍ରି କରିବେ",
+                "ତୁରନ୍ତ ଚାଷ ଆରମ୍ଭ ବିନା ଚିନ୍ତାରେ"
+            ],
+            correct: [0, 1, 2, 3]
+        },
+        {
+            id: "step3",
+            type: "singleChoice",
+            question: "୩. Organizing - ୫୦ ଏକର ଜମି ଓ ୧୦ ଜଣ କେମିତି ବ୍ୟବସ୍ଥା କରିବେ?",
+            options: [
+                "ସମସ୍ତେ ସବୁ କାମ ଅଗଡ଼ା ଭାବେ କରିବେ",
+                "ବିଭାଜନ: ୫ ଜଣ ଚାଷ, ୨ ଜଣ ଜଳସେଚନ, ୨ ଜଣ Marketing, ୧ ଜଣ Accounts - ପ୍ରତ୍ୟେକଙ୍କର ନିର୍ଦ୍ଦିଷ୍ଟ କାମ",
+                "କେବଳ ନେତା ସବୁ କରିବେ",
+                "କୌଣସି ବ୍ୟବସ୍ଥା ନାହିଁ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step4",
+            type: "multipleChoice",
+            question: "୪. Staffing - ଦକ୍ଷତା ବିକାଶ ପାଇଁ କଣ କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+            instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+            options: [
+                "Organic Farming Training: ବିଶେଷଜ୍ଞଙ୍କ ପାଖରୁ ଶିଖିବା",
+                "ପ୍ରତ୍ୟେକଙ୍କୁ ସେମାନଙ୍କ କାମରେ ପାରଦର୍ଶୀ କରିବା",
+                "ନୂଆ Techniques ଶିକ୍ଷା",
+                "ଯଦି ଆବଶ୍ୟକ, ଅଭିଜ୍ଞ କୃଷକ ନିଯୁକ୍ତି",
+                "କେବଳ ବର୍ତ୍ତମାନ ଜ୍ଞାନରେ କାମ"
+            ],
+            correct: [0, 1, 2, 3]
+        },
+        {
+            id: "step5",
+            type: "singleChoice",
+            question: "୫. Directing - ୧୦ ଜଣଙ୍କୁ ଏକ ଟିମ୍ ଭାବେ କେମିତି କାମ କରାଇବେ?",
+            options: [
+                "କେବଳ ଆଦେଶ ଦେବା ଓ ଡରାଇବା",
+                "ସ୍ପଷ୍ଟ ନିର୍ଦ୍ଦେଶ, ସମର୍ଥନ, Motivation, ସାମୂହିକ ଲକ୍ଷ୍ୟର ଗୁରୁତ୍ୱ ବୁଝାଇବା",
+                "ପ୍ରତ୍ୟେକେ ନିଜର ଇଚ୍ଛାରେ କାମ କରନ୍ତୁ",
+                "କୌଣସି ନେତୃତ୍ୱ ନାହିଁ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step6",
+            type: "multipleChoice",
+            question: "୬. Controlling - Progress କେମିତି Monitor କରିବେ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+            instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+            options: [
+                "ସାପ୍ତାହିକ Meeting: କେତେ ଉତ୍ପାଦନ ହେଲା",
+                "ମାସିକ ଆକଳନ: ଲକ୍ଷ୍ୟ (୧୦୦ କୁଇଣ୍ଟାଲ) ହାସଲ ହେଉଛି କି",
+                "ଖର୍ଚ୍ଚ ନିୟନ୍ତ୍ରଣ: ବଜେଟ୍ ମଧ୍ୟରେ କି",
+                "ଭୁଲ ସଂଶୋଧନ: ଯଦି ଫସଲ ଭଲ ନୁହେଁ, ନୂଆ ପଦ୍ଧତି",
+                "କେବଳ ବର୍ଷ ଶେଷରେ ଦେଖିବା"
+            ],
+            correct: [0, 1, 2, 3]
+        },
+        {
+            id: "step7",
+            type: "singleChoice",
+            question: "୭. F.W. Taylor - Efficiency କେମିତି ହାସଲ?",
+            options: [
+                "ଅନୁମାନରେ କାମ କରିବା",
+                "Scientific Method: ସଠିକ୍ ବିହନ, ସଠିକ୍ ସମୟ, ସଠିକ୍ ପଦ୍ଧତି - କମ୍ ଖର୍ଚ୍ଚରେ ଅଧିକ ଉତ୍ପାଦନ",
+                "କେବଳ ଅଧିକ ପରିଶ୍ରମ",
+                "କେବଳ ପୁରୁଣା ପଦ୍ଧତି"
+            ],
+            correct: 1
+        },
+        {
+            id: "step8",
+            type: "singleChoice",
+            question: "୮. Henri Fayol - Coordinate କାହିଁକି ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ?",
+            options: [
+                "କେବଳ ମିଟିଂ ପାଇଁ",
+                "ସମସ୍ତ କାମ (ଚାଷ, ଜଳସେଚନ, Marketing) ସମନ୍ୱିତ - ଗୋଟିଏ ଲକ୍ଷ୍ୟରେ ଏକତ୍ର",
+                "କେବଳ ସମୟ ପାସ୍",
+                "କୌଣସି ଆବଶ୍ୟକତା ନାହିଁ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step9",
+            type: "singleChoice",
+            question: "୯. Peter Drucker - ଏହି Cooperative କେଉଁ ତିନୋଟି ପରିଚାଳନା କରିବ?",
+            options: [
+                "କେବଳ ଚାଷ",
+                "Business (Cooperative ଚଲାଇବା) + Managers (୧୦ ସଦସ୍ୟ ଗାଇଡ୍) + Work (ଚାଷ ଓ ବିକ୍ରୟ)",
+                "କେବଳ ଟଙ୍କା",
+                "କିଛି ନୁହେଁ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step10",
+            type: "singleChoice",
+            question: "୧୦. Goal-Oriented - ଏହି Cooperative ର ଲକ୍ଷ୍ୟ କଣ?",
+            options: [
+                "କେବଳ ସମୟ ପାସ୍",
+                "ସ୍ପଷ୍ଟ: ୧ ବର୍ଷରେ ୧୦୦ କୁଇଣ୍ଟାଲ Organic ଉତ୍ପାଦନ ଓ ଲାଭଜନକ ହେବା",
+                "କୌଣସି ଲକ୍ଷ୍ୟ ନାହିଁ",
+                "କେବଳ ମନୋରଞ୍ଜନ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step11",
+            type: "singleChoice",
+            question: "୧୧. Efficiency vs Effectiveness - ଉଦାହରଣ?",
+            options: [
+                "ଦୁଇଟି ସମାନ",
+                "Efficiency: କମ୍ ବିହନ, ଜଳରେ ଚାଷ | Effectiveness: ଲକ୍ଷ୍ୟ ୧୦୦ କୁଇଣ୍ଟାଲ ହାସଲ",
+                "କେବଳ ଖର୍ଚ୍ଚ",
+                "କେବଳ ଉତ୍ପାଦନ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step12",
+            type: "singleChoice",
+            question: "୧୨. Universal Nature - Management Principles Farming, Business, School - ସବୁଠି କାହିଁକି?",
+            options: [
+                "କେବଳ ସଂଯୋଗ",
+                "କାରଣ ମୂଳ ସିଦ୍ଧାନ୍ତ (Planning-Controlling) ସବୁ କ୍ଷେତ୍ରରେ ପ୍ରୟୋଗଯୋଗ୍ୟ",
+                "କେବଳ ଫ୍ୟାଶନ୍",
+                "କୌଣସି କାରଣ ନାହିଁ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step13",
+            type: "singleChoice",
+            question: "୧୩. Dynamic Nature - ଆଜିର Farming ରେ କେଉଁ ପରିବର୍ତ୍ତନ?",
+            options: [
+                "କେବଳ ପୁରୁଣା ପଦ୍ଧତି",
+                "ନୂଆ: Drip Irrigation, Soil Testing, Mobile Apps, Organic Methods - Management ବଦଳେ",
+                "କୌଣସି ପରିବର୍ତ୍ତନ ନାହିଁ",
+                "କେବଳ ନାମ"
+            ],
+            correct: 1
+        },
+        {
+            id: "step14",
+            type: "multipleChoice",
+            question: "୧୪. Management as Process - କେଉଁ ପଦକ୍ଷେପଗୁଡ଼ିକ ନିରନ୍ତର ଚାଲିବ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+            instruction: "✓ ସମସ୍ତ ପାଞ୍ଚଟି ଚୟନ କରନ୍ତୁ",
+            options: [
+                "Planning: ପ୍ରତି ଫସଲ ପୂର୍ବରୁ ଯୋଜନା",
+                "Organizing: ପ୍ରତିଥର କାମ ବିଭାଜନ",
+                "Staffing: ନିରନ୍ତର ତାଲିମ",
+                "Directing: ଦୈନିକ ନେତୃତ୍ୱ",
+                "Controlling: ସାପ୍ତାହିକ/ମାସିକ ଯାଞ୍ଚ"
+            ],
+            correct: [0, 1, 2, 3, 4]
+        },
+        {
+            id: "step15",
+            type: "multipleChoice",
+            question: "୧୫. ଏହି Cooperative ସଫଳ ହେବା ପାଇଁ କେଉଁଗୁଡ଼ିକ ଅତ୍ୟାବଶ୍ୟକ? (ଏକାଧିକ ଚୟନ କରନ୍ତୁ)",
+            instruction: "✓ ଏକାଧିକ ଉତ୍ତର ଚୟନ କରନ୍ତୁ",
+            options: [
+                "ସ୍ପଷ୍ଟ ଯୋଜନା ଓ ଲକ୍ଷ୍ୟ (Goal-Oriented)",
+"ସଠିକ୍ ସମ୍ବଳ ବ୍ୟବସ୍ଥା (Organizing)",
+"ଦକ୍ଷ ଓ ପ୍ରଶିକ୍ଷିତ ଟିମ୍ (Staffing)",
+"ଭଲ ନେତୃତ୍ୱ ଓ ସମନ୍ୱୟ (Directing & Coordination)",
+"ନିରନ୍ତର ମନିଟରିଂ ଓ ସୁଧାର (Controlling)",
+"ପରିବର୍ତ୍ତନ ସହିତ ଖାପ ଖାଇବା (Dynamic)",
+"Efficiency ଓ Effectiveness ର ସନ୍ତୁଳନ"
+],
+correct: [0, 1, 2, 3, 4, 5, 6]
+}
+]
+}
+]
+    
+        };
+
+        // ============================================
+        // UNIVERSAL ENGINE - DO NOT MODIFY BELOW
+        // ============================================
+
+        let currentQuestionIndex = 0;
+        let currentStepIndex = 0;
+        let score = 0;
+        let questionStatus = [];
+        let answers = {};
+        let isAnswerSubmitted = false;
+
+        function initializeApp() {
+            // Set header information
+            document.getElementById('headerIcon').textContent = CONFIG.course.icon;
+            document.getElementById('courseTitle').textContent = CONFIG.course.title;
+            document.getElementById('courseSubtitle').textContent = CONFIG.course.subtitle;
+            document.getElementById('courseDescription').textContent = CONFIG.course.description;
+            
+            // Calculate statistics
+            const totalQuestions = CONFIG.questions.length;
+            const avgSteps = Math.round(CONFIG.questions.reduce((sum, q) => sum + q.steps.length, 0) / totalQuestions);
+            const maxScore = totalQuestions * CONFIG.course.pointsPerQuestion;
+            
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('totalSteps').textContent = avgSteps;
+            document.getElementById('maxScore').textContent = maxScore;
+            document.getElementById('maxScoreDisplay').textContent = maxScore;
+            
+            // Initialize question status
+            questionStatus = CONFIG.questions.map(() => ({
+                attempted: false,
+                completed: false
+            }));
+        }
+
+        function startGame() {
+            document.getElementById('gameSection').style.display = 'block';
+            document.querySelector('.header-card').style.display = 'none';
+            createQuestionNavigator();
+            loadQuestion(0);
+            window.scrollTo(0, 0);
+        }
+
+        function createQuestionNavigator() {
+            const container = document.getElementById('questionCardsContainer');
+            container.innerHTML = '';
+            
+            CONFIG.questions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'question-card-nav';
+                card.onclick = () => navigateToQuestion(idx);
+                
+                const statusText = idx === currentQuestionIndex ? 'ବର୍ତ୍ତମାନ' : 
+                                  questionStatus[idx].completed ? '✓ ସମ୍ପୂର୍ଣ୍ଣ' : 
+                                  questionStatus[idx].attempted ? 'ଆରମ୍ଭ' : 'ଅପ୍ରୟାସ';
+                
+                card.innerHTML = `
+                    <div class="question-card-header">
+                        <span class="question-number">ପ୍ରଶ୍ନ ${idx + 1}</span>
+                        <span class="question-status-badge">${statusText}</span>
+                    </div>
+                    <div class="question-scenario-preview">${q.scenario}</div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            updateQuestionNavigator();
+        }
+
+        function updateQuestionNavigator() {
+            const cards = document.querySelectorAll('.question-card-nav');
+            cards.forEach((card, idx) => {
+                card.classList.remove('current', 'completed', 'attempted');
+                
+                const statusBadge = card.querySelector('.question-status-badge');
+                
+                if (idx === currentQuestionIndex) {
+                    card.classList.add('current');
+                    statusBadge.textContent = 'ବର୍ତ୍ତମାନ';
+                } else if (questionStatus[idx].completed) {
+                    card.classList.add('completed');
+                    statusBadge.textContent = '✓ ସମ୍ପୂର୍ଣ୍ଣ';
+                } else if (questionStatus[idx].attempted) {
+                    card.classList.add('attempted');
+                    statusBadge.textContent = 'ଆରମ୍ଭ';
+                } else {
+                    statusBadge.textContent = 'ଅପ୍ରୟାସ';
+                }
+            });
+        }
+
+        function loadQuestion(index) {
+            if (index >= CONFIG.questions.length) {
+                showResults();
+                return;
+            }
+
+            currentQuestionIndex = index;
+            currentStepIndex = 0;
+            answers = {};
+            isAnswerSubmitted = false;
+            
+            const q = CONFIG.questions[index];
+            
+            // Update progress
+            document.getElementById('currentQ').textContent = index + 1;
+            document.getElementById('totalQ').textContent = CONFIG.questions.length;
+            document.getElementById('currentStep').textContent = 1;
+            document.getElementById('totalStepsInQuestion').textContent = q.steps.length;
+            
+            // Load scenario
+            document.getElementById('scenarioBox').innerHTML = `
+                <h3>📋 ପରିସ୍ଥିତି</h3>
+                <p>${q.scenario}</p>
+            `;
+            
+            // Clear and load steps
+            const stepsContainer = document.getElementById('stepsContainer');
+            stepsContainer.innerHTML = '';
+            
+            q.steps.forEach((step, idx) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.id = step.id;
+                stepDiv.className = 'question-section';
+                if (idx === 0) stepDiv.classList.add('active');
+                stepsContainer.appendChild(stepDiv);
+            });
+            
+            // Load first step
+            renderStep(0);
+            
+            // Reset UI
+            document.getElementById('nextBtn').classList.remove('show');
+            document.getElementById('feedback').classList.remove('show');
+        }
+
+        function renderStep(stepIndex) {
+            const q = CONFIG.questions[currentQuestionIndex];
+            const step = q.steps[stepIndex];
+            const container = document.getElementById(step.id);
+            
+            if (step.type === 'singleChoice') {
+                renderSingleChoice(container, step, stepIndex);
+            } else if (step.type === 'multipleChoice') {
+                renderMultipleChoice(container, step, stepIndex);
+            }
+        }
+
+        function renderSingleChoice(container, step, stepIndex) {
+            container.innerHTML = `
+                <div class="question-title">${step.question}</div>
+                <div class="options-grid" id="${step.id}_options"></div>
+            `;
+            
+            const optionsContainer = document.getElementById(`${step.id}_options`);
+            step.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectSingleChoice(step.id, idx, stepIndex);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function renderMultipleChoice(container, step, stepIndex) {
+            container.innerHTML = `
+                <div class="question-title">${step.question}</div>
+                ${step.instruction ? `<div class="instruction-box"><strong>${step.instruction}</strong></div>` : ''}
+                <div class="options-grid" id="${step.id}_options"></div>
+                <button class="btn next-btn" onclick="confirmMultipleChoice('${step.id}', ${stepIndex})" style="display: block;">
+                    ➜ ପରବର୍ତ୍ତୀ
+                </button>
+            `;
+            
+            const optionsContainer = document.getElementById(`${step.id}_options`);
+            step.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => toggleMultipleChoice(step.id, idx);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectSingleChoice(stepId, optionIndex, stepIndex) {
+            if (isAnswerSubmitted) return;
+            
+            answers[stepId] = optionIndex;
+            
+            const btns = document.querySelectorAll(`#${stepId}_options .option-btn`);
+            btns.forEach((btn, i) => {
+                btn.classList.remove('selected');
+                if (i === optionIndex) btn.classList.add('selected');
+            });
+            
+            currentStepIndex++;
+            document.getElementById('currentStep').textContent = currentStepIndex + 1;
+            
+            setTimeout(() => {
+                const q = CONFIG.questions[currentQuestionIndex];
+                if (currentStepIndex < q.steps.length) {
+                    const nextStep = q.steps[currentStepIndex];
+                    document.getElementById(nextStep.id).classList.add('active');
+                    renderStep(currentStepIndex);
+                    setTimeout(() => {
+                        document.getElementById(nextStep.id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                } else {
+                    submitAllAnswers();
+                }
+            }, 300);
+        }
+
+        function toggleMultipleChoice(stepId, optionIndex) {
+            if (isAnswerSubmitted) return;
+            
+            if (!answers[stepId]) answers[stepId] = [];
+            
+            const index = answers[stepId].indexOf(optionIndex);
+            if (index > -1) {
+                answers[stepId].splice(index, 1);
+            } else {
+                answers[stepId].push(optionIndex);
+            }
+            
+            const btn = document.querySelectorAll(`#${stepId}_options .option-btn`)[optionIndex];
+            btn.classList.toggle('multi-selected');
+        }
+
+        function confirmMultipleChoice(stepId, stepIndex) {
+            if (!answers[stepId] || answers[stepId].length === 0) {
+                alert('ଦୟାକରି ଅତିକମରେ ଗୋଟିଏ ଉତ୍ତର ଚୟନ କରନ୍ତୁ!');
+                return;
+            }
+            
+            currentStepIndex++;
+            document.getElementById('currentStep').textContent = currentStepIndex + 1;
+            
+            const q = CONFIG.questions[currentQuestionIndex];
+            if (currentStepIndex < q.steps.length) {
+                const nextStep = q.steps[currentStepIndex];
+                document.getElementById(nextStep.id).classList.add('active');
+                renderStep(currentStepIndex);
+                setTimeout(() => {
+                    document.getElementById(nextStep.id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            } else {
+                submitAllAnswers();
+            }
+        }
+
+        function submitAllAnswers() {
+            isAnswerSubmitted = true;
+            const q = CONFIG.questions[currentQuestionIndex];
+            let correctCount = 0;
+            let totalSteps = q.steps.length;
+            let feedback = '';
+            let detailedResults = [];
+            
+            // Check all steps
+            q.steps.forEach((step, stepIdx) => {
+                const userAnswer = answers[step.id];
+                const btns = document.querySelectorAll(`#${step.id}_options .option-btn`);
+                let isStepCorrect = false;
+                
+                if (step.type === 'singleChoice') {
+                    // Check if user answered and if it's correct
+                    if (userAnswer !== undefined && userAnswer === step.correct) {
+                        correctCount++;
+                        isStepCorrect = true;
+                        btns[userAnswer].classList.add('correct');
+                    } else {
+                        if (userAnswer !== undefined) btns[userAnswer].classList.add('wrong');
+                        btns[step.correct].classList.add('correct');
+                    }
+                    btns.forEach(btn => btn.disabled = true);
+                    
+                } else if (step.type === 'multipleChoice') {
+                    const userAnswers = (userAnswer || []).sort((a, b) => a - b);
+                    const correctAnswers = step.correct.sort((a, b) => a - b);
+                    
+                    // Must match EXACTLY - all correct answers selected, no wrong ones
+                    isStepCorrect = JSON.stringify(userAnswers) === JSON.stringify(correctAnswers);
+                    
+                    if (isStepCorrect) {
+                        correctCount++;
+                        userAnswers.forEach(idx => btns[idx].classList.add('correct'));
+                    } else {
+                        // Show which answers were wrong/missing
+                        userAnswers.forEach(idx => {
+                            if (!correctAnswers.includes(idx)) {
+                                btns[idx].classList.add('wrong');
+                            } else {
+                                btns[idx].classList.add('correct');
+                            }
+                        });
+                        correctAnswers.forEach(idx => {
+                            if (!userAnswers.includes(idx)) {
+                                btns[idx].classList.add('should-select');
+                            }
+                        });
+                    }
+                    btns.forEach(btn => btn.disabled = true);
+                }
+                
+                detailedResults.push({
+                    stepNumber: stepIdx + 1,
+                    correct: isStepCorrect
+                });
+            });
+            
+            // STRICT SCORING: Only award full points if ALL steps are correct
+            let points = 0;
+            if (correctCount === totalSteps) {
+                points = CONFIG.course.pointsPerQuestion;
+                feedback = `✅ <strong>ଉତ୍କୃଷ୍ଟ! ସମସ୍ତ ${totalSteps} ଟି ଉତ୍ତର ସଠିକ୍!</strong><br>ଆପଣ ${CONFIG.course.pointsPerQuestion} ପଏଣ୍ଟ ପାଇଲେ! 🎉`;
+                document.getElementById('feedback').style.background = 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)';
+                document.getElementById('feedback').style.color = '#2e7d32';
+            } else {
+                // No partial credit - must get all correct
+                points = 0;
+                
+                // Show which steps were wrong
+                const wrongSteps = detailedResults
+                    .filter(r => !r.correct)
+                    .map(r => r.stepNumber)
+                    .join(', ');
+                
+                feedback = `❌ <strong>ଦୁଃଖିତ!</strong><br>`;
+                feedback += `ଆପଣ ${correctCount}/${totalSteps} ଟି ସଠିକ୍ ଉତ୍ତର ଦେଇଛନ୍ତି।<br>`;
+                feedback += `<span style="font-size: 14px;">ଭୁଲ ପଦକ୍ଷେପ: ${wrongSteps}</span><br>`;
+                feedback += `<strong>ସମସ୍ତ ଉତ୍ତର ସଠିକ୍ ହେଲେ ହିଁ ${CONFIG.course.pointsPerQuestion} ପଏଣ୍ଟ ମିଳିବ।</strong><br>`;
+                feedback += `<span style="font-size: 13px; opacity: 0.9;">ଆପଣ ଏହି ପ୍ରଶ୍ନରେ <strong>0 ପଏଣ୍ଟ</strong> ପାଇଲେ। ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ! 💪</span>`;
+                
+                document.getElementById('feedback').style.background = 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)';
+                document.getElementById('feedback').style.color = '#c62828';
+            }
+            
+            score += points;
+            
+            document.getElementById('feedback').innerHTML = feedback;
+            document.getElementById('feedback').classList.add('show');
+            document.getElementById('score').textContent = score;
+            document.getElementById('nextBtn').classList.add('show');
+            
+            questionStatus[currentQuestionIndex].completed = true;
+            updateQuestionNavigator();
+            
+            setTimeout(() => {
+                document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function nextQuestion() {
+            loadQuestion(currentQuestionIndex + 1);
+        }
+
+        function navigateToQuestion(index) {
+            if (index === currentQuestionIndex) return;
+            
+            // Mark current as attempted if any answers given
+            if (Object.keys(answers).length > 0) {
+                questionStatus[currentQuestionIndex].attempted = true;
+            }
+            
+            loadQuestion(index);
+            updateQuestionNavigator();
+            
+            setTimeout(() => {
+                document.querySelector('.game-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function showResults() {
+            const gameCard = document.querySelector('.game-card');
+            const maxScore = CONFIG.questions.length * CONFIG.course.pointsPerQuestion;
+            const percentage = (score / maxScore) * 100;
+            let message = '';
+            let emoji = '';
+            
+            if (percentage >= 80) {
+                message = 'ଉତ୍କୃଷ୍ଟ! ଆପଣ ଏହି ବିଷୟରେ ଗଭୀର ଜ୍ଞାନ ରଖୁଛନ୍ତି!';
+                emoji = '🌟';
+            } else if (percentage >= 60) {
+                message = 'ଭଲ! ଆହୁରି କିଛି ଅଭ୍ୟାସ କଲେ ଆପଣ ବିଶେଷଜ୍ଞ ହୋଇପାରିବେ!';
+                emoji = '👍';
+            } else {
+                message = 'ଅଧିକ ଅଭ୍ୟାସ ଆବଶ୍ୟକ! ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ!';
+                emoji = '💪';
+            }
+            
+            gameCard.innerHTML = `
+                <div class="final-card">
+                    <h2>🎊 ପରୀକ୍ଷା ସମାପ୍ତ! 🎊</h2>
+                    <div class="final-score">
+                        <p>ଆପଣଙ୍କ ଚୂଡ଼ାନ୍ତ ସ୍କୋର:</p>
+                        <p>${score} / ${maxScore}</p>
+                        <p>${emoji} ${message}</p>
+                        <p style="margin-top: 15px; font-size: 14px;">
+                            ସଠିକତା: ${percentage.toFixed(1)}%
+                        </p>
+                    </div>
+                    <button onclick="location.reload()" class="restart-btn">
+                        🔄 ପୁନର୍ବାର ପରୀକ୍ଷା ଦିଅନ୍ତୁ
+                    </button>
+                </div>
+            `;
+        }
+
+        // Initialize on load
+        initializeApp();
+    </script>
+</body>
+  </html>
