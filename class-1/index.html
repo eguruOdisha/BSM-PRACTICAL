@@ -1272,30 +1272,28 @@ correct: [0, 1, 2, 3, 4, 5, 6]
         let answers = {};
         let isAnswerSubmitted = false;
 
-        function initializeApp() {
-            // Set header information
-            document.getElementById('headerIcon').textContent = CONFIG.course.icon;
-            document.getElementById('courseTitle').textContent = CONFIG.course.title;
-            document.getElementById('courseSubtitle').textContent = CONFIG.course.subtitle;
-            document.getElementById('courseDescription').textContent = CONFIG.course.description;
-            
-            // Calculate statistics
-            const totalQuestions = CONFIG.questions.length;
-            const avgSteps = Math.round(CONFIG.questions.reduce((sum, q) => sum + q.steps.length, 0) / totalQuestions);
-            const maxScore = totalQuestions * CONFIG.course.pointsPerQuestion;
-            
-            document.getElementById('totalQuestions').textContent = totalQuestions;
-            document.getElementById('totalSteps').textContent = avgSteps;
-            document.getElementById('maxScore').textContent = maxScore;
-            document.getElementById('maxScoreDisplay').textContent = maxScore;
-            
-            // Initialize question status
-            questionStatus = CONFIG.questions.map(() => ({
-                attempted: false,
-                completed: false
-            }));
-        }
-
+       function initializeApp() {
+    // Set header information
+    document.getElementById('headerIcon').textContent = CONFIG.course.icon;
+    document.getElementById('courseTitle').textContent = CONFIG.course.title;
+    document.getElementById('courseSubtitle').textContent = CONFIG.course.subtitle;
+    document.getElementById('courseDescription').textContent = CONFIG.course.description;
+    
+    // Calculate statistics
+    const totalQuestions = CONFIG.questions.length;
+    const avgSteps = Math.round(CONFIG.questions.reduce((sum, q) => sum + q.steps.length, 0) / totalQuestions);
+    const maxScore = totalQuestions * CONFIG.course.pointsPerQuestion;
+    
+    document.getElementById('totalQuestions').textContent = totalQuestions;
+    document.getElementById('maxScore').textContent = maxScore;  // ← RESTORE THIS LINE
+    document.getElementById('maxScoreDisplay').textContent = maxScore;
+    
+    // Initialize question status
+    questionStatus = CONFIG.questions.map(() => ({
+        attempted: false,
+        completed: false
+    }));
+}
         function startGame() {
             document.getElementById('gameSection').style.display = 'block';
             document.querySelector('.header-card').style.display = 'none';
